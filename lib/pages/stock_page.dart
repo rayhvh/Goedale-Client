@@ -23,7 +23,7 @@ class _StockPage extends State<StockPage>{
             AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) return CircularProgressIndicator();
           return FirestoreStockListview(
-              documents: snapshot.data.documents);
+              beersInStock: snapshot.data.documents);
         },
       ),
     ),);

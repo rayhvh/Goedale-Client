@@ -12,11 +12,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'pages/stock_page.dart';
 import 'pages/cart_page.dart';
 import 'pages/history_page.dart';
+import 'package:goedale_client/functions/globals.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -38,6 +40,7 @@ PageController pageController;
 
 class _HomeWidgetState extends State<HomeWidget> {
   int _page = 0;
+
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(

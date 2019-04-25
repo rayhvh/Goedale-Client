@@ -7,31 +7,32 @@ import 'package:goedale_client/widgets/starrating_widget.dart';
 import 'package:goedale_client/widgets/quickadd_button.dart';
 import 'package:goedale_client/functions/utils.dart';
 import 'package:goedale_client/pages/beerdetail_page.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class FirestoreStockListview extends StatelessWidget {
-  final List<DocumentSnapshot> documents;
+  final List<DocumentSnapshot> beersInStock;
 
-  FirestoreStockListview({this.documents});
+  FirestoreStockListview({this.beersInStock});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: documents.length,
+      itemCount: beersInStock.length,
       itemBuilder: (BuildContext context, int index) {
         var _listing = BeerListing(
           beer: Beer(
-            id: documents[index].data['id'].toString(),
-            name: documents[index].data['name'].toString(),
-            brewery: documents[index].data['brewery'].toString(),
+            id: beersInStock[index].data['id'].toString(),
+            name: beersInStock[index].data['name'].toString(),
+            brewery: beersInStock[index].data['brewery'].toString(),
             label: BeerLabel(
-                iconUrl: documents[index].data['label']['iconUrl'].toString()),
+                iconUrl: beersInStock[index].data['label']['iconUrl'].toString()),
             style: BeerStyle(
-                id: null, name: documents[index].data['style'].toString()),
-            abv: documents[index].data['abv'],
-            rating: documents[index].data['rating'],
+                id: null, name: beersInStock[index].data['style'].toString()),
+            abv: beersInStock[index].data['abv'],
+            rating: beersInStock[index].data['rating'],
           ),
-          price: documents[index].data['price'],
-          stockAmount: documents[index].data['amount'],
+          price: beersInStock[index].data['price'],
+          stockAmount: beersInStock[index].data['amount'],
         );
 
         if (_listing.stockAmount == 0) {
@@ -48,7 +49,7 @@ class FirestoreStockListview extends StatelessWidget {
                           isThreeLine: true,
                           leading: CircleAvatar(
                             backgroundImage:
-                                NetworkImage(_listing.beer.label.iconUrl,),
+                            CachedNetworkImageProvider(_listing.beer.label.iconUrl,),
                           ),
                           title: Text(_listing.beer.name,
                               style: TextStyle(fontWeight: FontWeight.bold)),
