@@ -14,7 +14,7 @@ class CartPage extends StatefulWidget {
 
 class _CartPage extends State<CartPage>{
 
-  String queryNumber;
+  String queryNumber; //todo add listener for this. needs update after change.
   @override
   void initState(){
     super.initState();

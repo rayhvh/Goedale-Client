@@ -17,6 +17,8 @@ import 'package:goedale_client/pages/admin_page.dart';
 
 void main() => runApp(MyApp());
 
+
+
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
@@ -43,6 +45,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   var appBarTitleText = new Text("Goedale");
   int _page = 0;
   String tableNumber;
+
 
   Future updateTableNumber() async {
     getTableNumber().then((result) {
@@ -179,6 +182,7 @@ class _HomeWidgetState extends State<HomeWidget> {
               controller: _textFieldController,
               decoration: InputDecoration(hintText: "Pincode"),
               obscureText: true,
+              keyboardType: TextInputType.number,
             ),
             actions: <Widget>[
               FlatButton(
@@ -191,11 +195,10 @@ class _HomeWidgetState extends State<HomeWidget> {
                 child: Text("Ok"),
                 onPressed: () {
                   if (_textFieldController.text == "1234") {
+                    _textFieldController.text = "";
                     Navigator.of(context).pop();
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (context) => AdminPage()));
+                    _getAdminSettings();
+            //        Navigator.push(context, MaterialPageRoute(builder: (context) => AdminPage()));
                   } else{
                     print("wrong pw");
                   }
@@ -205,4 +208,12 @@ class _HomeWidgetState extends State<HomeWidget> {
           );
         });
   }
+
+  _getAdminSettings() async { //todo FIX THIS CRAP. return saved data before closing the admin page.
+    tableNumber = await Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => AdminPage()));
+    print(tableNumber + " is wat ik heb");
+      setAppBarTitle();
+  }
 }
+

@@ -38,12 +38,14 @@ class _AdminPageState extends State<AdminPage> {
               child: TextFormField(
                 controller: _numberTextField,
                 decoration: InputDecoration(hintText: "Nummer van de tafel"),
+                keyboardType: TextInputType.number,
               ),
             ),
             RaisedButton(
               child: Icon(Icons.check),
               onPressed: (){
                 setTableNumber(int.parse(_numberTextField.text));
+                Navigator.of(context).pop(_numberTextField.text); //TODO fix returning data better. reload data in home without having to first return something..
               },
             ),
 
