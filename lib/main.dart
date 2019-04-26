@@ -13,6 +13,7 @@ import 'pages/stock_page.dart';
 import 'pages/cart_page.dart';
 import 'pages/history_page.dart';
 import 'package:goedale_client/functions/globals.dart';
+import 'package:goedale_client/pages/admin_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -39,13 +40,73 @@ class HomeWidget extends StatefulWidget {
 PageController pageController;
 
 class _HomeWidgetState extends State<HomeWidget> {
+  var appBarTitleText = new Text("Goedale");
   int _page = 0;
+  String tableNumber;
+
+  Future updateTableNumber() async {
+    getTableNumber().then((result) {
+      setState(() {
+        tableNumber = result.toString();
+      });
+    });
+  }
+
+  setAppBarTitle() {
+    if (_page == 0) {
+      appBarTitleText = Text("Aanbod - Goedale - Tafel: " + tableNumber);
+    } else if (_page == 1) {
+      appBarTitleText = Text("Winkelwagen - Goedale - Tafel: " + tableNumber);
+    } else if (_page == 2) {
+      appBarTitleText = Text("Bestellingen - Goedale - Tafel: " + tableNumber);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    pageController = new PageController();
+    updateTableNumber();
+    //  setTableNumber(6); // make menu for this.
+//    getTableNumber().then((result){
+//      setState(() {
+//        tableNumber = result.toString();
+//      });
+//    });
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Goedale'),
+        drawer: Drawer(
+          child: ListView(
+            // Important: Remove any padding from the ListView.
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                child: Text('Goedale - Bokaal'),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                ),
+              ),
+              ListTile(
+                title: Text('Beheer'),
+                onTap: () {
+                  _displayDialog(context);
+                },
+              ),
+              ListTile(
+                title: Text('Instellingen'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
         ),
+        appBar: AppBar(
+            title:
+                appBarTitleText //Text((_page == 0) ?  "Aanbod" : "Winkelwagen" + ' - Goedale - Tafel: ' + tableNumber),
+            ),
         body: PageView(
           children: <Widget>[
             Container(
@@ -61,50 +122,87 @@ class _HomeWidgetState extends State<HomeWidget> {
           controller: pageController,
           onPageChanged: onPageChanged,
         ),
-        bottomNavigationBar: CupertinoTabBar(
-
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                icon: Icon(
-              Icons.home,
-              color: (_page == 0) ? Colors.white : Colors.grey,
-            )),
-            BottomNavigationBarItem(
-                icon: Icon(
-              Icons.shopping_cart,
-              color: (_page == 1) ? Colors.white : Colors.grey,
-            )),
-            BottomNavigationBarItem(
-                icon: Icon(
-              Icons.history,
-              color: (_page == 2) ? Colors.white : Colors.grey,
-            )),
-          ],
-          onTap: navigationTapped,
-          currentIndex: _page,
+        bottomNavigationBar: SizedBox(
+          height: 70,
+          child: CupertinoTabBar(
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                  icon: Icon(
+                Icons.home,
+                color: (_page == 0) ? Colors.white : Colors.grey,
+              )),
+              BottomNavigationBarItem(
+                  icon: Icon(
+                Icons.shopping_cart,
+                color: (_page == 1) ? Colors.white : Colors.grey,
+              )),
+              BottomNavigationBarItem(
+                  icon: Icon(
+                Icons.history,
+                color: (_page == 2) ? Colors.white : Colors.grey,
+              )),
+            ],
+            onTap: navigationTapped,
+            currentIndex: _page,
+          ),
         ));
   }
 
   void navigationTapped(int page) {
     //Animating Page
-    pageController.animateToPage(page, duration: Duration(milliseconds: 250), curve: Curves.easeInOutQuart);
+    pageController.jumpToPage(page);
+    //pageController.animateToPage(page, duration: Duration(milliseconds: 250), curve: Curves.easeInOutQuart);
   }
 
   void onPageChanged(int page) {
-    print(pageController.page);
+
     setState(() {
       this._page = page;
     });
-  }
-  @override
-  void initState() {
-    super.initState();
-    pageController = new PageController();
+    setAppBarTitle();
   }
 
   @override
   void dispose() {
     super.dispose();
     pageController.dispose();
+  }
+
+  TextEditingController _textFieldController = TextEditingController();
+  _displayDialog(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Voer pincode in'),
+            content: TextField(
+              controller: _textFieldController,
+              decoration: InputDecoration(hintText: "Pincode"),
+              obscureText: true,
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: new Text('Annuleren'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              FlatButton(
+                child: Text("Ok"),
+                onPressed: () {
+                  if (_textFieldController.text == "1234") {
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => AdminPage()));
+                  } else{
+                    print("wrong pw");
+                  }
+                },
+              )
+            ],
+          );
+        });
   }
 }

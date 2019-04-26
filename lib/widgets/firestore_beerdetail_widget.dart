@@ -4,22 +4,40 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:goedale_client/models/beer_models.dart';
 import 'package:goedale_client/functions/utils.dart';
 import 'package:goedale_client/widgets/starrating_widget.dart';
+import 'package:goedale_client/functions/globals.dart';
 
-class FirestoreBeerdetail extends StatelessWidget {
+class FirestoreBeerdetail extends StatefulWidget {
   final DocumentSnapshot beerdocument;
 
   FirestoreBeerdetail({this.beerdocument});
 
   @override
+  _FirestoreBeerdetailState createState() => _FirestoreBeerdetailState();
+}
+
+class _FirestoreBeerdetailState extends State<FirestoreBeerdetail> {
+  String queryNumber;
+  @override
+  void initState(){
+    super.initState();
+    getTableNumber().then((result){
+      setState(() {
+        queryNumber = result.toString();
+      });
+    });
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    print(beerdocument.data); // map this data to a model or not..
+    print(widget.beerdocument.data); // map this data to a model or not..
     TextEditingController amountController = new TextEditingController();
-    if (beerdocument.data == null) {
+    if (widget.beerdocument.data == null) {
       Navigator.pop(context);
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text(beerdocument.data['name']),
+        title: Text(widget.beerdocument.data['name']),
       ),
       body: Row(
         children: <Widget>[
@@ -34,18 +52,18 @@ class FirestoreBeerdetail extends StatelessWidget {
                         child: Column(
                           children: <Widget>[
                             CachedNetworkImage(
-                              imageUrl: beerdocument.data["label"]["largeUrl"],
+                              imageUrl: widget.beerdocument.data["label"]["largeUrl"],
                               height: 200,
                             ),
-                            Text(beerdocument.data['name'],
+                            Text(widget.beerdocument.data['name'],
                                 style: Theme.of(context).textTheme.title),
-                            Text(beerdocument.data['brewery']),
-                            Text(beerdocument.data['style']),
-                            Text(beerdocument.data['abv'].toString() + "%"),
-                            StarRating(rating: beerdocument.data['rating'],
+                            Text(widget.beerdocument.data['brewery']),
+                            Text(widget.beerdocument.data['style']),
+                            Text(widget.beerdocument.data['abv'].toString() + "%"),
+                            StarRating(rating: widget.beerdocument.data['rating'],
                             color: Colors.white,
                             borderColor: Colors.white,),
-                            Text(beerdocument.data['rating'].toString()),
+                            Text(widget.beerdocument.data['rating'].toString()),
                           ],
                         ),
                       ),
@@ -55,7 +73,7 @@ class FirestoreBeerdetail extends StatelessWidget {
                         children: <Widget>[
                           StreamBuilder(
                             stream: Firestore.instance
-                                .collection('bokaalTables').document('6').collection("cart").document(beerdocument.data['id'])
+                                .collection('bokaalTables').document(queryNumber).collection("cart").document(widget.beerdocument.data['id'])
                                 .snapshots(), // change to dynamic db?
                             builder: (BuildContext context,
                                 AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -69,18 +87,18 @@ class FirestoreBeerdetail extends StatelessWidget {
                                   print("nog geen data in cart");
                                   return Column(
                                     children: <Widget>[
-                                      Text("€" + beerdocument.data['price'].toString(), style: Theme.of(context).textTheme.title),
-                                      Text("Nog " + beerdocument.data['amount'].toString() + " in voorraad", style: Theme.of(context).textTheme.title),
+                                      Text("€" + widget.beerdocument.data['price'].toString(), style: Theme.of(context).textTheme.title),
+                                      Text("Nog " + widget.beerdocument.data['amount'].toString() + " in voorraad", style: Theme.of(context).textTheme.title),
                                       RaisedButton(
                                           onPressed: () {
                                             Firestore.instance.runTransaction(
                                                     (Transaction transaction) async { // improve using batch,
                                                   DocumentReference reference =
-                                                  Firestore.instance.collection("bokaalTables").document('6').collection("cart").document(beerdocument.data['id']);
+                                                  Firestore.instance.collection("bokaalTables").document(queryNumber).collection("cart").document(widget.beerdocument.data['id']);
                                                   //fix 6 to dynamic number.
 
                                                   await reference.setData({
-                                                    "beerId": beerdocument.data['id'],
+                                                    "beerId": widget.beerdocument.data['id'],
                                                     "qty": 1,
                                                   }, merge: true);
                                                 }
@@ -88,9 +106,9 @@ class FirestoreBeerdetail extends StatelessWidget {
                                             Firestore.instance.runTransaction(
                                                     (Transaction transaction) async {
                                                   DocumentReference reference =
-                                                  Firestore.instance.collection("bokaalStock").document(beerdocument.data['id']);
+                                                  Firestore.instance.collection("bokaalStock").document(widget.beerdocument.data['id']);
                                                   await reference.updateData({
-                                                    "amount": beerdocument.data['amount'] - 1,
+                                                    "amount": widget.beerdocument.data['amount'] - 1,
                                                   });
                                                 }
                                             );
@@ -106,7 +124,7 @@ class FirestoreBeerdetail extends StatelessWidget {
                                   Firestore.instance.runTransaction(
                                           (Transaction transaction) async { // improve using batch,
                                         DocumentReference reference =
-                                        Firestore.instance.collection("bokaalTables").document('6').collection("cart").document(beerdocument.data['id']);
+                                        Firestore.instance.collection("bokaalTables").document(queryNumber).collection("cart").document(widget.beerdocument.data['id']);
                                         //fix 6 to dynamic number
                                         await reference.delete();
                                       });
@@ -115,19 +133,19 @@ class FirestoreBeerdetail extends StatelessWidget {
                                 else{
                                   return Column(
                                     children: <Widget>[
-                                      Text("€" + beerdocument.data['price'].toString(), style: Theme.of(context).textTheme.title),
-                                      Text("Nog " + beerdocument.data['amount'].toString() + " in voorraad", style: Theme.of(context).textTheme.title),
+                                      Text("€" + widget.beerdocument.data['price'].toString(), style: Theme.of(context).textTheme.title),
+                                      Text("Nog " + widget.beerdocument.data['amount'].toString() + " in voorraad", style: Theme.of(context).textTheme.title),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: <Widget>[
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: RaisedButton(
-                                                onPressed: (beerdocument.data['amount'] == 0) ? null :() {
+                                                onPressed: (widget.beerdocument.data['amount'] == 0) ? null :() {
                                                   Firestore.instance.runTransaction(
                                                           (Transaction transaction) async { // improve using batch,
                                                         DocumentReference reference =
-                                                        Firestore.instance.collection("bokaalTables").document('6').collection("cart").document(beerdocument.data['id']);
+                                                        Firestore.instance.collection("bokaalTables").document(queryNumber).collection("cart").document(widget.beerdocument.data['id']);
                                                         //fix 6 to dynamic number
                                                         await reference.updateData({
                                                           "qty": snapshot.data.data['qty'] + 1,
@@ -137,9 +155,9 @@ class FirestoreBeerdetail extends StatelessWidget {
                                                   Firestore.instance.runTransaction(
                                                           (Transaction transaction) async {
                                                         DocumentReference reference =
-                                                        Firestore.instance.collection("bokaalStock").document(beerdocument.data['id']);
+                                                        Firestore.instance.collection("bokaalStock").document(widget.beerdocument.data['id']);
                                                         await reference.updateData({
-                                                          "amount": beerdocument.data['amount'] - 1,
+                                                          "amount": widget.beerdocument.data['amount'] - 1,
                                                         });
                                                       }
                                                   );
@@ -154,7 +172,7 @@ class FirestoreBeerdetail extends StatelessWidget {
                                                   Firestore.instance.runTransaction(
                                                           (Transaction transaction) async { // improve using batch,
                                                         DocumentReference reference =
-                                                        Firestore.instance.collection("bokaalTables").document('6').collection("cart").document(beerdocument.data['id']);
+                                                        Firestore.instance.collection("bokaalTables").document(queryNumber).collection("cart").document(widget.beerdocument.data['id']);
                                                         //fix 6 to dynamic number
                                                         await reference.updateData({
                                                           "qty": snapshot.data.data['qty'] - 1,
@@ -164,9 +182,9 @@ class FirestoreBeerdetail extends StatelessWidget {
                                                   Firestore.instance.runTransaction(
                                                           (Transaction transaction) async {
                                                         DocumentReference reference =
-                                                        Firestore.instance.collection("bokaalStock").document(beerdocument.data['id']);
+                                                        Firestore.instance.collection("bokaalStock").document(widget.beerdocument.data['id']);
                                                         await reference.updateData({
-                                                          "amount": beerdocument.data['amount'] + 1,
+                                                          "amount": widget.beerdocument.data['amount'] + 1,
                                                         });
                                                       }
                                                   );
@@ -195,15 +213,15 @@ class FirestoreBeerdetail extends StatelessWidget {
                     children: <Widget>[
                       Text("Beschrijving",
                           style: Theme.of(context).textTheme.title),
-                      Text(beerdocument.data['desc']),
+                      Text(widget.beerdocument.data['desc']),
                       Text("Smaak omschrijving",
                           style: Theme.of(context).textTheme.title),
-                      Text(beerdocument.data['tasteDesc']),
+                      Text(widget.beerdocument.data['tasteDesc']),
                       Text("Foto's", style: Theme.of(context).textTheme.title),
                       StreamBuilder(
                         stream: Firestore.instance
                             .collection('bokaalStock')
-                            .document(beerdocument.data['id'])
+                            .document(widget.beerdocument.data['id'])
                             .collection('beerPhotos')
                             .snapshots(), // change to dynamic db?
                         builder: (BuildContext context,

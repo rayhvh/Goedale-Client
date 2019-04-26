@@ -4,6 +4,7 @@ import 'package:goedale_client/main.dart';
 import 'package:goedale_client/functions/globals.dart';
 import 'package:goedale_client/widgets/cart_listview.dart';
 
+
 class CartPage extends StatefulWidget {
 
 
@@ -12,17 +13,29 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPage extends State<CartPage>{
-  num tableIdentifyNumber = tableNumber;
+
+  String queryNumber;
+  @override
+  void initState(){
+    super.initState();
+    getTableNumber().then((result){
+      setState(() {
+        queryNumber = result.toString();
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context){
+
     return Container( child: StreamBuilder(
     stream: Firestore.instance
-        .collection('bokaalTables').document('6').collection('cart') // fix dynamic number..
+        .collection('bokaalTables').document(queryNumber).collection('cart') // fix dynamic number..
         .snapshots(),
     builder: (BuildContext context,
     AsyncSnapshot<QuerySnapshot> snapshot) {
     if (!snapshot.hasData) return CircularProgressIndicator();
-    print(tableIdentifyNumber);
+
     return CartListView(
     cartItems: snapshot.data.documents);
     },
