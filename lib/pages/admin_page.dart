@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:goedale_client/functions/globals.dart';
-import 'package:goedale_client/main.dart';
 import 'package:goedale_client/scoped_model/beer_table.dart';
 import 'package:scoped_model/scoped_model.dart';
 

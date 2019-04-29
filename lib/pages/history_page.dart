@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:goedale_client/main.dart';
-
 
 class HistoryPage extends StatefulWidget {
   @override

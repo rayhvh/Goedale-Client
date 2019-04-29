@@ -1,11 +1,10 @@
-import 'package:goedale_client/main.dart';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:goedale_client/widgets/starrating_widget.dart';
 import 'package:goedale_client/functions/utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:goedale_client/pages/beerdetail_page.dart';
-import 'package:goedale_client/functions/globals.dart';
 import 'package:goedale_client/scoped_model/beer_table.dart';
 import 'package:scoped_model/scoped_model.dart';
 

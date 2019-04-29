@@ -6,10 +6,9 @@
 // connected to a callback that increments a counter.
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:goedale_client/scoped_model/beer_table.dart';
+import 'dart:async';
 
 import 'package:goedale_client/pages/stock_page.dart';
 import 'package:goedale_client/pages/cart_page.dart';
@@ -41,7 +40,6 @@ class MyApp extends StatelessWidget {
 
 class HomeWidget extends StatefulWidget {
   HomeWidget({Key key}) : super(key: key);
-
   @override
   _HomeWidgetState createState() => _HomeWidgetState();
 }
@@ -51,23 +49,19 @@ PageController pageController;
 class _HomeWidgetState extends State<HomeWidget> {
   var appBarTitleText = "Goedale";
   int _page = 0;
-
   String tableNumber;
+
   @override
   void initState() {
     super.initState();
     pageController = new PageController();
-    //updateTableNumber();
-    tableNumber = ScopedModel.of<BeerTable>(context).tableNumber;
-      setAppBarTitle();
+    loadCurrentTable();
+    setAppBarTitle();
   }
-//  Future updateTableNumber() async {
-//    getTableNumber().then((result) {
-//      setState(() {
-//        tableNumber = result.toString();
-//      });
-//    });
-//  }
+
+  loadCurrentTable() async{
+    ScopedModel.of<BeerTable>(context).loadTableNumber();
+  }
 
   setAppBarTitle() {
     if (_page == 0) {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:goedale_client/models/beer_models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:goedale_client/widgets/firestore_beerdetail_widget.dart';
 
