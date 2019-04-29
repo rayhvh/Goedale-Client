@@ -88,7 +88,7 @@ class FirestoreStockListview extends StatelessWidget {
               ],
             ),
             onTap:() {
-              Navigator.push(context, new MaterialPageRoute(builder: (context) => BeerDetailPage(_listing.beer)));
+              Navigator.push(context, new MaterialPageRoute(builder: (context) => BeerDetailPage(_listing.beer.id)));
             },
           );
         }

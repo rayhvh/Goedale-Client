@@ -8,26 +8,36 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scoped_model/scoped_model.dart';
+import 'package:goedale_client/scoped_model/beer_table.dart';
 
-import 'pages/stock_page.dart';
-import 'pages/cart_page.dart';
-import 'pages/history_page.dart';
-import 'package:goedale_client/functions/globals.dart';
+import 'package:goedale_client/pages/stock_page.dart';
+import 'package:goedale_client/pages/cart_page.dart';
+import 'package:goedale_client/pages/history_page.dart';
 import 'package:goedale_client/pages/admin_page.dart';
 
-void main() => runApp(MyApp());
+import 'package:goedale_client/functions/globals.dart'; //weg?
+
+
+
+void main() => runApp(MyApp(BeerTable()));
 
 
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  final BeerTable beerTable;
+  const MyApp(this.beerTable);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Code Sample for material.Scaffold',
-      theme: ThemeData.dark(),
-      home: HomeWidget(),
+    return ScopedModel<BeerTable>(
+      model: beerTable,
+      child: MaterialApp(
+        title: 'Goedale',
+        theme: ThemeData.dark(),
+        home: HomeWidget(),
+      ),
     );
   }
 }
@@ -70,6 +80,7 @@ class _HomeWidgetState extends State<HomeWidget> {
     super.initState();
     pageController = new PageController();
     updateTableNumber();
+    setAppBarTitle();
     //  setTableNumber(6); // make menu for this.
 //    getTableNumber().then((result){
 //      setState(() {
@@ -79,76 +90,101 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   Widget build(BuildContext context) {
-    return Scaffold(
-        drawer: Drawer(
-          child: ListView(
-            // Important: Remove any padding from the ListView.
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                child: Text('Goedale - Bokaal'),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                ),
+
+        return Scaffold(
+            drawer: Drawer(
+              child: ListView(
+                // Important: Remove any padding from the ListView.
+                padding: EdgeInsets.zero,
+                children: <Widget>[
+                  DrawerHeader(
+                    child: Text('Goedale - Bokaal'),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                    ),
+                  ),
+                  ListTile(
+                    title: Text('Beheer'),
+                    onTap: () {
+                      _displayDialog(context);
+                    },
+                  ),
+                  ListTile(
+                    title: Text('Instellingen'),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
               ),
-              ListTile(
-                title: Text('Beheer'),
-                onTap: () {
-                  _displayDialog(context);
-                },
-              ),
-              ListTile(
-                title: Text('Instellingen'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        ),
-        appBar: AppBar(
-            title:
+            ),
+            appBar: AppBar(
+                title:
                 appBarTitleText //Text((_page == 0) ?  "Aanbod" : "Winkelwagen" + ' - Goedale - Tafel: ' + tableNumber),
             ),
-        body: PageView(
-          children: <Widget>[
-            Container(
-              child: StockPage(),
+            body: PageView(
+              children: <Widget>[
+                Container(
+                  child: StockPage(),
+                ),
+                Container(
+                  child: CartPage(),
+                ),
+                Container(
+                  child: HistoryPage(),
+                ),
+              ],
+              controller: pageController,
+              onPageChanged: onPageChanged,
             ),
-            Container(
-              child: CartPage(),
-            ),
-            Container(
-              child: HistoryPage(),
-            ),
-          ],
-          controller: pageController,
-          onPageChanged: onPageChanged,
-        ),
-        bottomNavigationBar: SizedBox(
-          height: 70,
-          child: CupertinoTabBar(
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                  icon: Icon(
-                Icons.home,
-                color: (_page == 0) ? Colors.white : Colors.grey,
-              )),
-              BottomNavigationBarItem(
-                  icon: Icon(
-                Icons.shopping_cart,
-                color: (_page == 1) ? Colors.white : Colors.grey,
-              )),
-              BottomNavigationBarItem(
-                  icon: Icon(
-                Icons.history,
-                color: (_page == 2) ? Colors.white : Colors.grey,
-              )),
-            ],
-            onTap: navigationTapped,
-            currentIndex: _page,
-          ),
-        ));
+            bottomNavigationBar: SizedBox(
+              height: 70,
+              child: CupertinoTabBar(
+                items: <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                      icon: Icon(
+                        Icons.home,
+                        color: (_page == 0) ? Colors.white : Colors.grey,
+                      )),
+                  BottomNavigationBarItem(
+                    icon:  Stack(
+                      children: <Widget>[
+                        Icon(Icons.shopping_cart, color: (_page == 1) ? Colors.white : Colors.grey),
+                        Positioned(
+                          right: 0,
+                          child:  Container(
+                            padding: EdgeInsets.all(1),
+                            decoration:  BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            constraints: BoxConstraints(
+                              minWidth: 12,
+                              minHeight: 12,
+                            ),
+                            child:  Text(
+                              '5',//todo somehow manage state better to get cart items here.
+                              style:  TextStyle(
+                                color: Colors.white,
+                                fontSize: 8,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),),
+                  BottomNavigationBarItem(
+                      icon: Icon(
+                        Icons.history,
+                        color: (_page == 2) ? Colors.white : Colors.grey,
+                      )),
+                ],
+                onTap: navigationTapped,
+                currentIndex: _page,
+              ),
+            ));
+
   }
 
   void navigationTapped(int page) {

@@ -3,11 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:goedale_client/main.dart';
 import 'package:goedale_client/functions/globals.dart';
 import 'package:goedale_client/widgets/cart_listview.dart';
-
+import 'package:scoped_model/scoped_model.dart';
 
 class CartPage extends StatefulWidget {
-
-
   @override
   _CartPage createState() => _CartPage();
 }
@@ -30,7 +28,7 @@ class _CartPage extends State<CartPage>{
 
     return Container( child: StreamBuilder(
     stream: Firestore.instance
-        .collection('bokaalTables').document(queryNumber).collection('cart') // fix dynamic number..
+        .collection('bokaalTables').document(queryNumber).collection('cart')
         .snapshots(),
     builder: (BuildContext context,
     AsyncSnapshot<QuerySnapshot> snapshot) {
