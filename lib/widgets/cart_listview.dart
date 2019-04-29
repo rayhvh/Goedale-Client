@@ -6,6 +6,8 @@ import 'package:goedale_client/functions/utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:goedale_client/pages/beerdetail_page.dart';
 import 'package:goedale_client/functions/globals.dart';
+import 'package:goedale_client/scoped_model/beer_table.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class CartListView extends StatefulWidget {
   final List<DocumentSnapshot> cartItems;
@@ -17,16 +19,6 @@ class CartListView extends StatefulWidget {
 }
 
 class _CartListViewState extends State<CartListView> {
-  String queryNumber;
-  @override
-  void initState(){
-    super.initState();
-    getTableNumber().then((result){
-      setState(() {
-        queryNumber = result.toString();
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,94 +72,99 @@ class _CartListViewState extends State<CartListView> {
                           Expanded(
                             child: Column(
                               children: <Widget>[
-                                StreamBuilder(
-                                  stream: Firestore.instance
-                                      .collection('bokaalTables').document(queryNumber).collection("cart").document(snapshot.data.data['id'])
-                                      .snapshots(), // change to dynamic db?
-                                  builder: (BuildContext context,
-                                      AsyncSnapshot<DocumentSnapshot> snapshotCart) {
-                                    if (!snapshotCart.hasData) {
-                                      return CircularProgressIndicator();
-                                    }
-                                    else{
-                                     if (snapshotCart.data.data['qty'] == 0){
-                                        Firestore.instance.runTransaction(
-                                                (Transaction transaction) async { // improve using batch,
-                                              DocumentReference reference =
-                                              Firestore.instance.collection("bokaalTables").document(queryNumber).collection("cart").document(snapshot.data.data['id']);
-                                              await reference.delete();
-                                            });
-                                        return Container();
-                                      }
-                                      else{
-                                        return Column(
-                                          children: <Widget>[
-                                            Text("Aantal (" + snapshot.data.data['amount'].toString() + " beschikbaar)"),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                ScopedModelDescendant<BeerTable>(
+                                  builder: (context,child,beerTableModel){
+                                    return StreamBuilder(
+                                      stream: Firestore.instance
+                                          .collection('bokaalTables').document(beerTableModel.tableNumber).collection("cart").document(snapshot.data.data['id'])
+                                          .snapshots(), // change to dynamic db?
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<DocumentSnapshot> snapshotCart) {
+                                        if (!snapshotCart.hasData) {
+                                          return CircularProgressIndicator();
+                                        }
+                                        else{
+                                          if (snapshotCart.data.data['qty'] == 0){
+                                            Firestore.instance.runTransaction(
+                                                    (Transaction transaction) async { // improve using batch,
+                                                  DocumentReference reference =
+                                                  Firestore.instance.collection("bokaalTables").document(beerTableModel.tableNumber).collection("cart").document(snapshot.data.data['id']);
+                                                  await reference.delete();
+                                                });
+                                            return Container();
+                                          }
+                                          else{
+                                            return Column(
                                               children: <Widget>[
-                                                Padding(
-                                                  padding: const EdgeInsets.all(8.0),
-                                                  child: RaisedButton(
-                                                      color: Colors.white,
-                                                      onPressed: () {
-                                                        Firestore.instance.runTransaction(
-                                                                (Transaction transaction) async { // improve using batch,
-                                                              DocumentReference reference =
-                                                              Firestore.instance.collection("bokaalTables").document(queryNumber).collection("cart").document(snapshot.data.data['id']);
-                                                              await reference.updateData({
-                                                                "qty": snapshotCart.data.data['qty'] - 1,
-                                                              }, );
-                                                            }
-                                                        );
-                                                        Firestore.instance.runTransaction(
-                                                                (Transaction transaction) async {
-                                                              DocumentReference reference =
-                                                              Firestore.instance.collection("bokaalStock").document(snapshot.data.data['id']);
-                                                              await reference.updateData({
-                                                                "amount": snapshot.data.data['amount'] + 1,
-                                                              });
-                                                            }
-                                                        );
-                                                      },
-                                                      child:  Icon(Icons.remove, color: Colors.black,)),
-                                                ),
-                                                Text(snapshotCart.data.data['qty'].toString(), style: Theme.of(context).textTheme.title),
-                                                Padding(
-                                                  padding: const EdgeInsets.all(8.0),
-                                                  child: RaisedButton(
-                                                      color: Colors.white,
-                                                      onPressed: (snapshot.data.data['amount'] == 0) ? null :() {
-                                                        Firestore.instance.runTransaction(
-                                                                (Transaction transaction) async { // improve using batch,
-                                                              DocumentReference reference =
-                                                              Firestore.instance.collection("bokaalTables").document(queryNumber).collection("cart").document(snapshot.data.data['id']);
-                                                              await reference.updateData({
-                                                                "qty": snapshotCart.data.data['qty'] + 1,
-                                                              }, );
-                                                            }
-                                                        );
-                                                        Firestore.instance.runTransaction(
-                                                                (Transaction transaction) async {
-                                                              DocumentReference reference =
-                                                              Firestore.instance.collection("bokaalStock").document(snapshot.data.data['id']);
-                                                              await reference.updateData({
-                                                                "amount": snapshot.data.data['amount'] - 1,
-                                                              });
-                                                            }
-                                                        );
+                                                Text("Aantal (" + snapshot.data.data['amount'].toString() + " beschikbaar)"),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: RaisedButton(
+                                                          color: Colors.white,
+                                                          onPressed: () {
+                                                            Firestore.instance.runTransaction(
+                                                                    (Transaction transaction) async { // improve using batch,
+                                                                  DocumentReference reference =
+                                                                  Firestore.instance.collection("bokaalTables").document(beerTableModel.tableNumber).collection("cart").document(snapshot.data.data['id']);
+                                                                  await reference.updateData({
+                                                                    "qty": snapshotCart.data.data['qty'] - 1,
+                                                                  }, );
+                                                                }
+                                                            );
+                                                            Firestore.instance.runTransaction(
+                                                                    (Transaction transaction) async {
+                                                                  DocumentReference reference =
+                                                                  Firestore.instance.collection("bokaalStock").document(snapshot.data.data['id']);
+                                                                  await reference.updateData({
+                                                                    "amount": snapshot.data.data['amount'] + 1,
+                                                                  });
+                                                                }
+                                                            );
+                                                          },
+                                                          child:  Icon(Icons.remove, color: Colors.black,)),
+                                                    ),
+                                                    Text(snapshotCart.data.data['qty'].toString(), style: Theme.of(context).textTheme.title),
+                                                    Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: RaisedButton(
+                                                          color: Colors.white,
+                                                          onPressed: (snapshot.data.data['amount'] == 0) ? null :() {
+                                                            Firestore.instance.runTransaction(
+                                                                    (Transaction transaction) async { // improve using batch,
+                                                                  DocumentReference reference =
+                                                                  Firestore.instance.collection("bokaalTables").document(beerTableModel.tableNumber).collection("cart").document(snapshot.data.data['id']);
+                                                                  await reference.updateData({
+                                                                    "qty": snapshotCart.data.data['qty'] + 1,
+                                                                  }, );
+                                                                }
+                                                            );
+                                                            Firestore.instance.runTransaction(
+                                                                    (Transaction transaction) async {
+                                                                  DocumentReference reference =
+                                                                  Firestore.instance.collection("bokaalStock").document(snapshot.data.data['id']);
+                                                                  await reference.updateData({
+                                                                    "amount": snapshot.data.data['amount'] - 1,
+                                                                  });
+                                                                }
+                                                            );
 
-                                                      },
-                                                      child: const Icon(Icons.add, color: Colors.black,)),
+                                                          },
+                                                          child: const Icon(Icons.add, color: Colors.black,)),
+                                                    ),
+                                                  ],
                                                 ),
+                                                Text("x €" + snapshot.data.data['price'].toString() +" = €" + (snapshot.data.data['price'] * snapshotCart.data.data['qty']).toString())
                                               ],
-                                            ),
-                                            Text("x €" + snapshot.data.data['price'].toString() +" = €" + (snapshot.data.data['price'] * snapshotCart.data.data['qty']).toString())
-                                          ],
-                                        );
-                                      }
-                                    }
+                                            );
+                                          }
+                                        }
+                                      },
+                                    );
                                   },
+                                 
                                 ), //todo exporting this to a separate file or improve
                                 /*Text(snapshot.data['amount'].toString() +
                                     " over in voorraad"),

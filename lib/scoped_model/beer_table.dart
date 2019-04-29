@@ -5,7 +5,9 @@ class BeerTable extends Model {
   String get tableNumber => _tableNumber;
 
   void changeTableNumber(String tableNumber) {
+    print(this._tableNumber + " was het oude nummer");
     this._tableNumber = tableNumber;
+    print(this._tableNumber + " is het nieuwe nummer");
     notifyListeners();
   }
 }

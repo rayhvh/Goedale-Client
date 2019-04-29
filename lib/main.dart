@@ -54,18 +54,26 @@ PageController pageController;
 class _HomeWidgetState extends State<HomeWidget> {
   var appBarTitleText = new Text("Goedale");
   int _page = 0;
+
   String tableNumber;
-
-
-  Future updateTableNumber() async {
-    getTableNumber().then((result) {
-      setState(() {
-        tableNumber = result.toString();
-      });
-    });
+  @override
+  void initState() {
+    super.initState();
+    pageController = new PageController();
+    //updateTableNumber();
+    tableNumber = ScopedModel.of<BeerTable>(context).tableNumber;
+      setAppBarTitle();
   }
+//  Future updateTableNumber() async {
+//    getTableNumber().then((result) {
+//      setState(() {
+//        tableNumber = result.toString();
+//      });
+//    });
+//  }
 
   setAppBarTitle() {
+    tableNumber = ScopedModel.of<BeerTable>(context).tableNumber;
     if (_page == 0) {
       appBarTitleText = Text("Aanbod - Goedale - Tafel: " + tableNumber);
     } else if (_page == 1) {
@@ -75,22 +83,7 @@ class _HomeWidgetState extends State<HomeWidget> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    pageController = new PageController();
-    updateTableNumber();
-    setAppBarTitle();
-    //  setTableNumber(6); // make menu for this.
-//    getTableNumber().then((result){
-//      setState(() {
-//        tableNumber = result.toString();
-//      });
-//    });
-  }
-
   Widget build(BuildContext context) {
-
         return Scaffold(
             drawer: Drawer(
               child: ListView(
@@ -194,11 +187,10 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   void onPageChanged(int page) {
-
     setState(() {
       this._page = page;
+      setAppBarTitle();
     });
-    setAppBarTitle();
   }
 
   @override
@@ -233,8 +225,8 @@ class _HomeWidgetState extends State<HomeWidget> {
                   if (_textFieldController.text == "1234") {
                     _textFieldController.text = "";
                     Navigator.of(context).pop();
-                    _getAdminSettings();
-            //        Navigator.push(context, MaterialPageRoute(builder: (context) => AdminPage()));
+                    openAdminAndWait(context)
+                 //   _getAdminSettings(); //remove?
                   } else{
                     print("wrong pw");
                   }
@@ -244,12 +236,11 @@ class _HomeWidgetState extends State<HomeWidget> {
           );
         });
   }
+openAdminAndWait(BuildContext context) async {
+  final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => AdminPage()));
+// todo fix this wait, this wait just updates the title after the context has closed. because we can't somehow change it otherwise
+  setAppBarTitle();
+}
 
-  _getAdminSettings() async { //todo FIX THIS CRAP. return saved data before closing the admin page.
-    tableNumber = await Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => AdminPage()));
-    print(tableNumber + " is wat ik heb");
-      setAppBarTitle();
-  }
 }
 
