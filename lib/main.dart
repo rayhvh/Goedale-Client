@@ -7,7 +7,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:goedale_client/scoped_model/beer_table.dart';
+import 'package:goedale_client/scoped_model/global_model.dart';
 import 'dart:async';
 
 import 'package:goedale_client/pages/stock_page.dart';
@@ -16,18 +16,18 @@ import 'package:goedale_client/pages/history_page.dart';
 import 'package:goedale_client/pages/admin_page.dart';
 
 
-void main() => runApp(MyApp(BeerTable()));
+void main() => runApp(MyApp(GlobalModel()));
 
 
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
-  final BeerTable beerTable;
+  final GlobalModel beerTable;
   const MyApp(this.beerTable);
 
   @override
   Widget build(BuildContext context) {
-    return ScopedModel<BeerTable>(
+    return ScopedModel<GlobalModel>(
       model: beerTable,
       child: MaterialApp(
         title: 'Goedale',
@@ -60,7 +60,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   loadCurrentTable() async{
-    ScopedModel.of<BeerTable>(context).loadTableNumber();
+    ScopedModel.of<GlobalModel>(context).loadTableNumber();
   }
 
   setAppBarTitle() {
@@ -74,8 +74,8 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   Widget build(BuildContext context) {
-        return ScopedModelDescendant<BeerTable>(
-          builder: (context, child, beerTableModel){
+        return ScopedModelDescendant<GlobalModel>(
+          builder: (context, child, globalModel){
             return  Scaffold(
                 drawer: Drawer(
                   child: ListView(
@@ -105,7 +105,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                 ),
                 appBar: AppBar(
                     title: Text(
-                    appBarTitleText + beerTableModel.tableNumber)
+                    appBarTitleText + globalModel.tableNumber)
                 ),
                 body: PageView(
                   children: <Widget>[

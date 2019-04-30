@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:goedale_client/scoped_model/beer_table.dart';
+import 'package:goedale_client/scoped_model/global_model.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class AdminPage extends StatefulWidget {
@@ -29,7 +29,7 @@ class _AdminPageState extends State<AdminPage> {
     return Scaffold(
       appBar: AppBar(),
       body: Container(
-        child: ScopedModelDescendant<BeerTable>(
+        child: ScopedModelDescendant<GlobalModel>(
           builder: (context,child,beerTableModel){
             TextEditingController _numberTextField = TextEditingController(text: beerTableModel.tableNumber);
             return Row(

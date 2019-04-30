@@ -5,7 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:goedale_client/widgets/starrating_widget.dart';
 
 import 'package:scoped_model/scoped_model.dart';
-import 'package:goedale_client/scoped_model/beer_table.dart';
+import 'package:goedale_client/scoped_model/global_model.dart';
 
 class FirestoreBeerdetail extends StatefulWidget {
   final DocumentSnapshot beerdocument;
@@ -72,11 +72,11 @@ class _FirestoreBeerdetailState extends State<FirestoreBeerdetail> {
                     Expanded(
                       child: Column(
                         children: <Widget>[
-                          ScopedModelDescendant<BeerTable>(
-                            builder: (context, child, beerTableModel){
+                          ScopedModelDescendant<GlobalModel>(
+                            builder: (context, child, globalModel){
                               return StreamBuilder(
                                 stream: Firestore.instance
-                                    .collection('bokaalTables').document(beerTableModel.tableNumber).collection("cart").document(widget.beerdocument.data['id'])
+                                    .collection('bokaalTables').document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id'])
                                     .snapshots(), // change to dynamic db?
                                 builder: (BuildContext context,
                                     AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -109,7 +109,7 @@ class _FirestoreBeerdetailState extends State<FirestoreBeerdetail> {
                                                       Firestore.instance.runTransaction(
                                                               (Transaction transaction) async { // improve using batch,
                                                             DocumentReference reference =
-                                                            Firestore.instance.collection("bokaalTables").document(beerTableModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
+                                                            Firestore.instance.collection("bokaalTables").document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
                                                             await reference.setData({
                                                               "beerId": widget.beerdocument.data['id'],
                                                               "qty": 1,
@@ -138,7 +138,7 @@ class _FirestoreBeerdetailState extends State<FirestoreBeerdetail> {
                                       Firestore.instance.runTransaction(
                                               (Transaction transaction) async { // improve using batch,
                                             DocumentReference reference =
-                                            Firestore.instance.collection("bokaalTables").document(beerTableModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
+                                            Firestore.instance.collection("bokaalTables").document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
                                             await reference.delete();
                                           });
                                       return Container();
@@ -159,7 +159,7 @@ class _FirestoreBeerdetailState extends State<FirestoreBeerdetail> {
                                                       Firestore.instance.runTransaction(
                                                               (Transaction transaction) async { // improve using batch,
                                                             DocumentReference reference =
-                                                            Firestore.instance.collection("bokaalTables").document(beerTableModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
+                                                            Firestore.instance.collection("bokaalTables").document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
                                                             await reference.updateData({
                                                               "qty": snapshot.data.data['qty'] - 1,
                                                             }, );
@@ -185,7 +185,7 @@ class _FirestoreBeerdetailState extends State<FirestoreBeerdetail> {
                                                       Firestore.instance.runTransaction(
                                                               (Transaction transaction) async { // improve using batch,
                                                             DocumentReference reference =
-                                                            Firestore.instance.collection("bokaalTables").document(beerTableModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
+                                                            Firestore.instance.collection("bokaalTables").document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
                                                             await reference.updateData({
                                                               "qty": snapshot.data.data['qty'] + 1,
                                                             }, );
