@@ -113,18 +113,22 @@ class _FirestoreBeerdetailState extends State<FirestoreBeerdetail> {
                                                             await reference.setData({
                                                               "beerId": widget.beerdocument.data['id'],
                                                               "qty": 1,
-                                                            }, merge: true);
-                                                          }
-                                                      );
-                                                      Firestore.instance.runTransaction(
-                                                              (Transaction transaction) async {
-                                                            DocumentReference reference =
-                                                            Firestore.instance.collection("bokaalStock").document(widget.beerdocument.data['id']);
-                                                            await reference.updateData({
-                                                              "amount": widget.beerdocument.data['amount'] - 1,
+                                                            }, merge: true).then((_) {
+                                                              Firestore.instance.runTransaction(
+                                                                      (Transaction transaction) async {
+                                                                    DocumentReference reference =
+                                                                    Firestore.instance.collection("bokaalStock").document(widget.beerdocument.data['id']);
+                                                                    await reference.updateData({
+                                                                      "amount": widget.beerdocument.data['amount'] - 1,
+                                                                    }).then((_) {
+                                                                      globalModel.updateCartItemAmount();
+                                                                    });
+                                                                  }
+                                                              );
                                                             });
                                                           }
                                                       );
+
                                                     },
                                                     child: const  Icon(Icons.add, color: Colors.black,)),
                                               ),
@@ -139,7 +143,9 @@ class _FirestoreBeerdetailState extends State<FirestoreBeerdetail> {
                                               (Transaction transaction) async { // improve using batch,
                                             DocumentReference reference =
                                             Firestore.instance.collection("bokaalTables").document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
-                                            await reference.delete();
+                                            await reference.delete().then((_){
+                                              globalModel.updateCartItemAmount();
+                                            });
                                           });
                                       return Container();
                                     }
@@ -162,18 +168,22 @@ class _FirestoreBeerdetailState extends State<FirestoreBeerdetail> {
                                                             Firestore.instance.collection("bokaalTables").document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
                                                             await reference.updateData({
                                                               "qty": snapshot.data.data['qty'] - 1,
-                                                            }, );
-                                                          }
-                                                      );
-                                                      Firestore.instance.runTransaction(
-                                                              (Transaction transaction) async {
-                                                            DocumentReference reference =
-                                                            Firestore.instance.collection("bokaalStock").document(widget.beerdocument.data['id']);
-                                                            await reference.updateData({
-                                                              "amount": widget.beerdocument.data['amount'] + 1,
+                                                            }, ).then((_) {
+                                                              Firestore.instance.runTransaction(
+                                                                      (Transaction transaction) async {
+                                                                    DocumentReference reference =
+                                                                    Firestore.instance.collection("bokaalStock").document(widget.beerdocument.data['id']);
+                                                                    await reference.updateData({
+                                                                      "amount": widget.beerdocument.data['amount'] + 1,
+                                                                    }).then((_) {
+                                                                      globalModel.updateCartItemAmount();
+                                                                    });
+                                                                  }
+                                                              );
                                                             });
                                                           }
                                                       );
+
                                                     },
                                                     child:  Icon(Icons.remove, color: Colors.black,)),
                                               ),
@@ -188,18 +198,22 @@ class _FirestoreBeerdetailState extends State<FirestoreBeerdetail> {
                                                             Firestore.instance.collection("bokaalTables").document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
                                                             await reference.updateData({
                                                               "qty": snapshot.data.data['qty'] + 1,
-                                                            }, );
-                                                          }
-                                                      );
-                                                      Firestore.instance.runTransaction(
-                                                              (Transaction transaction) async {
-                                                            DocumentReference reference =
-                                                            Firestore.instance.collection("bokaalStock").document(widget.beerdocument.data['id']);
-                                                            await reference.updateData({
-                                                              "amount": widget.beerdocument.data['amount'] - 1,
+                                                            }, ).then((_) {
+                                                              Firestore.instance.runTransaction(
+                                                                      (Transaction transaction) async {
+                                                                    DocumentReference reference =
+                                                                    Firestore.instance.collection("bokaalStock").document(widget.beerdocument.data['id']);
+                                                                    await reference.updateData({
+                                                                      "amount": widget.beerdocument.data['amount'] - 1,
+                                                                    }).then((_) {
+                                                                      globalModel.updateCartItemAmount();
+                                                                    });
+                                                                  }
+                                                              );
                                                             });
                                                           }
                                                       );
+
 
                                                     },
                                                     child: const Icon(Icons.add, color: Colors.black,)),

@@ -18,7 +18,6 @@ class CartListView extends StatefulWidget {
 
 class _CartListViewState extends State<CartListView> {
 
-//num totalPrice = 0; //todo put in scopedmodel? make global.
 
   @override
   initState() {
@@ -30,35 +29,7 @@ class _CartListViewState extends State<CartListView> {
     print('initstat');
   }
 
-//
-//  getTableNumber() async{
-//     return await ScopedModel.of<GlobalModel>(context).loadTableNumber();
-//  }
-//
-//  Future<List<DocumentSnapshot>> getBeersId(String tableNumberResult) async{
-//    var data = await Firestore.instance.collection('bokaalTables').document(tableNumberResult).collection('cart').getDocuments();
-//    var beerId = data.documents;
-//    return beerId;
-//  }
-//
-//  Future updatePrices(String tableNumberResult) async{
-//    num tempTotal =0;
-//    getBeersId(tableNumberResult).then((data) async {
-//      for (int i=0; i < data.length; i++ ){
-//       var beer = await Firestore.instance.collection('bokaalStock').document(data[i]['beerId']).get();
-//      // print(data[i]['qty'].toString() + " getPrices, qty");
-//       tempTotal += beer.data['price'] * data[i]['qty'];
-//       setState(() {
-//       });
-//      // print(tempTotal.toString() + " total vannuit getPrices ");
-//      }
-//    }).then((_) {
-//      setState(() {
-//        totalPrice = tempTotal;
-//        print(totalPrice);
-//      });
-//    });
-//  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +166,7 @@ class _CartListViewState extends State<CartListView> {
                                                                                 }).then((_){
                                                                                  // updatePrices(globalModel.tableNumber);
                                                                                   globalModel.updatePrices();
+                                                                                  globalModel.updateCartItemAmount();
                                                                                 });
                                                                               });
                                                                         });
@@ -242,6 +214,7 @@ class _CartListViewState extends State<CartListView> {
                                                                         }).then((_) {
                                                                           //updatePrices(globalModel.tableNumber);
                                                                           globalModel.updatePrices();
+                                                                          globalModel.updateCartItemAmount();
                                                                         });
                                                                       });
                                                                     });
@@ -274,28 +247,7 @@ class _CartListViewState extends State<CartListView> {
                                               }
                                             },
                                           )//todo exporting this to a separate file or improve
-                                          /*Text(snapshot.data['amount'].toString() +
-                                            " over in voorraad"),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: <Widget>[
-                                            IconButton(
-                                              icon: Icon(Icons.remove),
-                                              iconSize: 20,
-                                              color: Colors.white,
-                                              onPressed: () {},
-                                            ),
-                                            Text(widget.cartItems[index]
-                                                    .data['qty']
-                                                    .toString() +
-                                                " in winkelmandje"),
-                                            IconButton(
-                                              icon: Icon(Icons.add),
-                                              iconSize: 20,
-                                              onPressed: () {},
-                                            ),
-                                          ],
-                                        ),*/
+
                                         ],
                                       ),
                                     ),
@@ -326,3 +278,36 @@ class _CartListViewState extends State<CartListView> {
     );
   }
 }
+
+
+
+
+//
+//  getTableNumber() async{
+//     return await ScopedModel.of<GlobalModel>(context).loadTableNumber();
+//  }
+//
+//  Future<List<DocumentSnapshot>> getBeersId(String tableNumberResult) async{
+//    var data = await Firestore.instance.collection('bokaalTables').document(tableNumberResult).collection('cart').getDocuments();
+//    var beerId = data.documents;
+//    return beerId;
+//  }
+//
+//  Future updatePrices(String tableNumberResult) async{
+//    num tempTotal =0;
+//    getBeersId(tableNumberResult).then((data) async {
+//      for (int i=0; i < data.length; i++ ){
+//       var beer = await Firestore.instance.collection('bokaalStock').document(data[i]['beerId']).get();
+//      // print(data[i]['qty'].toString() + " getPrices, qty");
+//       tempTotal += beer.data['price'] * data[i]['qty'];
+//       setState(() {
+//       });
+//      // print(tempTotal.toString() + " total vannuit getPrices ");
+//      }
+//    }).then((_) {
+//      setState(() {
+//        totalPrice = tempTotal;
+//        print(totalPrice);
+//      });
+//    });
+//  }

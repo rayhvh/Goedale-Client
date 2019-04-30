@@ -7,8 +7,10 @@ class GlobalModel extends Model {
 
   String _tableNumber = '0';
   num _totalAmount = 0;
+  num _cartItemAmount =0;
   String get tableNumber => _tableNumber;
   num get totalAmount => _totalAmount;
+  num get cartItemAmount => _cartItemAmount;
 
   void changeTableNumber(String tableNumber) {
     print(this._tableNumber + " was het oude nummer");
@@ -36,6 +38,13 @@ class GlobalModel extends Model {
   }
 
 
+  updateCartItemAmount() async{
+    var list =await Firestore.instance.collection('bokaalTables').document(this._tableNumber).collection('cart').getDocuments();
+    this._cartItemAmount = list.documents.length;
+    print(_cartItemAmount);
+    notifyListeners();
+}
+
   Future<List<DocumentSnapshot>> getBeersId(String tableNumberResult) async{
     var data = await Firestore.instance.collection('bokaalTables').document(tableNumberResult).collection('cart').getDocuments();
     var beerId = data.documents;
@@ -47,13 +56,12 @@ class GlobalModel extends Model {
     getBeersId(this._tableNumber).then((data) async {
       for (int i=0; i < data.length; i++ ){
         var beer = await Firestore.instance.collection('bokaalStock').document(data[i]['beerId']).get();
-        // print(data[i]['qty'].toString() + " getPrices, qty");
         tempTotal += beer.data['price'] * data[i]['qty'];
       }
     }).then((_) {
       this._totalAmount = tempTotal;
       notifyListeners();
-      print(this._totalAmount.toString() + " is de total amount in cart");
+     // print(this._totalAmount.toString() + " is de total amount in cart");
     });
   }
 
