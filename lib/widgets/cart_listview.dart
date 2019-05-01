@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:goedale_client/pages/beerdetail_page.dart';
 import 'package:goedale_client/scoped_model/global_model.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:goedale_client/pages/payment_page.dart';
 
 class CartListView extends StatefulWidget {
   final List<DocumentSnapshot> cartItems;
@@ -65,8 +66,7 @@ class _CartListViewState extends State<CartListView> {
                                           ),
                                         ),
                                         title: Text(snapshot.data['name'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold)),
+                                            style: TextStyle(fontWeight: FontWeight.bold)),
                                         subtitle: Column(
                                           crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -182,12 +182,7 @@ class _CartListViewState extends State<CartListView> {
                                                           ),
                                                           Text(
                                                               snapshotCart.data
-                                                                  .data['qty']
-                                                                  .toString(),
-                                                              style: Theme.of(
-                                                                  context)
-                                                                  .textTheme
-                                                                  .title),
+                                                                  .data['qty'].toString(), style: Theme.of(context).textTheme.title),
                                                           Padding(
                                                             padding:
                                                             const EdgeInsets
@@ -270,7 +265,36 @@ class _CartListViewState extends State<CartListView> {
                         });
                   }),
             ),
-            Expanded(child: Text(globalModel.totalAmount.toString())),
+            Container(
+             // color: Colors.white,
+        decoration: new BoxDecoration(
+        gradient: new LinearGradient(
+        colors: [
+        Colors.grey,
+       Colors.white,
+        ],
+        begin: const FractionalOffset(0.0, 0.0),
+        end: const FractionalOffset(1.0, 0.0),
+        stops: [0.0, 1.0],
+        tileMode: TileMode.clamp)),
+                constraints: BoxConstraints.expand(
+                  height: 60
+                ),
+                child:
+                 Row(
+                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                   children: <Widget>[
+
+                     Text("Te betalen bedrag: €" + globalModel.totalAmount.toString(), style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
+                   RaisedButton(
+                     color: Colors.black,
+                       onPressed: (){
+                         globalModel.moveCartToOrder();
+                         Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentPage()));
+                       },
+                       child:Text("Naar betalen"))
+                   ],
+                 )),
           ],
         );
       },

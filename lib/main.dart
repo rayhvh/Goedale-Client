@@ -60,8 +60,10 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   triggerGlobalsLoad() async{
-    ScopedModel.of<GlobalModel>(context).loadTableNumber();
-    ScopedModel.of<GlobalModel>(context).updateCartItemAmount();
+    await ScopedModel.of<GlobalModel>(context).loadTableNumber().then((_){
+      ScopedModel.of<GlobalModel>(context).updateCartItemAmount();
+    });
+
   }
 
   setAppBarTitle() {
@@ -149,7 +151,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                   minHeight: 12,
                                 ),
                                 child:  Text(
-                                  globalModel.cartItemAmount.toString(),//todo somehow manage state better to get cart items here.
+                                  globalModel.cartItemAmount.toString(),
                                   style:  TextStyle(
                                     color: Colors.white,
                                     fontSize: 8,

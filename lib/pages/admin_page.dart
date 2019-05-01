@@ -8,15 +8,6 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
-//  String tableNumber = "";
-//  Future getTable() async {
-//    getTableNumber().then((result) {
-//      setState(() {
-//        tableNumber = result.toString();
-//        _numberTextField.text = result.toString();
-//      });
-//    });
-//  }
 
   @override
   void initState() {
@@ -46,7 +37,6 @@ class _AdminPageState extends State<AdminPage> {
                   child: Icon(Icons.check),
                   onPressed: (){
                     beerTableModel.changeTableNumber(_numberTextField.text);
-                   // Navigator.of(context).pop(_numberTextField.text); //TODO fix returning data better. reload data in home without having to first return something..
                   },
                 ),
 
