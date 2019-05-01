@@ -7,6 +7,7 @@ import 'package:goedale_client/pages/beerdetail_page.dart';
 import 'package:goedale_client/scoped_model/global_model.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:goedale_client/pages/payment_page.dart';
+import 'dart:async';
 
 class CartListView extends StatefulWidget {
   final List<DocumentSnapshot> cartItems;
@@ -164,7 +165,7 @@ class _CartListViewState extends State<CartListView> {
                                                                                     {
                                                                                   "amount": snapshot.data.data['amount'] + 1,
                                                                                 }).then((_){
-                                                                                 // updatePrices(globalModel.tableNumber);
+
                                                                                   globalModel.updatePrices();
                                                                                   globalModel.updateCartItemAmount();
                                                                                 });
@@ -284,13 +285,18 @@ class _CartListViewState extends State<CartListView> {
                  Row(
                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                    children: <Widget>[
-
                      Text("Te betalen bedrag: €" + globalModel.totalAmount.toString(), style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
                    RaisedButton(
                      color: Colors.black,
-                       onPressed: (){
-                         globalModel.moveCartToOrder();
-                         Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentPage()));
+                       onPressed: () async {
+                         await globalModel.moveCartToOrder().then((_) async{
+                          await Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentPage())).then((_){
+                          //  print('after pay exec.');
+                          //  Future.delayed(Duration(seconds: 1), () => globalModel.updatePrices());
+                            //globalModel.updatePrices();
+                           // globalModel.updateCartItemAmount();
+                          });
+                         });
                        },
                        child:Text("Naar betalen"))
                    ],

@@ -1,20 +1,18 @@
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'dart:io';
 
 class GlobalModel extends Model {
-
   String _tableNumber = '0';
   num _totalAmount = 0;
-  num _cartItemAmount =0;
+  num _cartItemAmount = 0;
   String _currentOrderId = '';
 
   String get tableNumber => _tableNumber;
   num get totalAmount => _totalAmount;
   num get cartItemAmount => _cartItemAmount;
   String get currentOrderId => _currentOrderId;
-
 
   void changeTableNumber(String tableNumber) {
     print(this._tableNumber + " was het oude nummer");
@@ -27,10 +25,11 @@ class GlobalModel extends Model {
 
   saveTableNumber(String number) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(number == "")
-      {await prefs.setString('tableNumber', "0");}
-    else
-      {await prefs.setString('tableNumber', number);}
+    if (number == "") {
+      await prefs.setString('tableNumber', "0");
+    } else {
+      await prefs.setString('tableNumber', number);
+    }
   }
 
   loadTableNumber() async {
@@ -41,74 +40,111 @@ class GlobalModel extends Model {
     return loadedNumber;
   }
 
-
-  updateCartItemAmount() async{
-    var list =await Firestore.instance.collection('bokaalTables').document(this._tableNumber).collection('cart').getDocuments();
+  updateCartItemAmount() async {
+    var list = await Firestore.instance
+        .collection('bokaalTables')
+        .document(this._tableNumber)
+        .collection('cart')
+        .getDocuments();
     this._cartItemAmount = list.documents.length;
     print(_cartItemAmount);
     notifyListeners();
-}
+  }
 
-
-  moveCartToOrder() async{
-    var list =await Firestore.instance.collection('bokaalTables').document(this._tableNumber).collection('cart').getDocuments();
-    var date = new DateTime.now();
-    var newDoc = await  Firestore.instance.collection('bokaalTables').document(this._tableNumber).collection('orders').add({
+  moveCartToOrder() async {
+    var list = await Firestore.instance
+        .collection('bokaalTables')
+        .document(this._tableNumber)
+        .collection('cart')
+        .getDocuments();
+    var date = new DateTime.now().millisecondsSinceEpoch;
+    var newDoc = await Firestore.instance
+        .collection('bokaalTables')
+        .document(this._tableNumber)
+        .collection('orders')
+        .add({
       "isPaid": false,
       "madeAt": date,
       "totalAmount": this._totalAmount, // no reason re-calculate. staying var.
     });
-    for (int i=0; i< list.documents.length; i++) {
-      Firestore.instance.runTransaction(
-              (Transaction transaction) async {
-            DocumentReference reference =
-            Firestore.instance.collection("bokaalTables").document(this._tableNumber).collection("orders").document(newDoc.documentID).collection('items').document(list.documents[i]['beerId']);
-            await reference.setData({
-              "beerId": list.documents[i]['beerId'],
-              "qty": list.documents[i]['qty'],
-            },);});
+    for (int i = 0; i < list.documents.length; i++) {
+      Firestore.instance.runTransaction((Transaction transaction) async {
+        DocumentReference reference = Firestore.instance
+            .collection("bokaalTables")
+            .document(this._tableNumber)
+            .collection("orders")
+            .document(newDoc.documentID)
+            .collection('items')
+            .document(list.documents[i]['beerId']);
+
+        await reference.setData(
+          {
+            "beerId": list.documents[i]['beerId'],
+            "qty": list.documents[i]['qty'],
+          },
+        );
+      });
     }
     _currentOrderId = newDoc.documentID;
     notifyListeners();
-    //todo delete items from cart after moving, add later because testing.
-
+ 
   }
 
-  orderGotPaid() async{
-    await Firestore.instance.collection('bokaalTables').document(this._tableNumber).collection('cart').getDocuments().then((snapshot){
-      for (DocumentSnapshot cartItem in snapshot.documents){
+  orderGotPaid() async {
+    await Firestore.instance
+        .collection('bokaalTables')
+        .document(this._tableNumber)
+        .collection('cart')
+        .getDocuments()
+        .then((snapshot) {
+      for (DocumentSnapshot cartItem in snapshot.documents) {
         cartItem.reference.delete();
       }
-      this._currentOrderId ='';
-      notifyListeners();
+      this._currentOrderId = '';
+      print('en nu notify');
+    }).then((_) {
+      Future.delayed(Duration(milliseconds: 750), () => updatePrices()).then((_){
+        updateCartItemAmount(); //todo fix the ugliesst ever dirty code.. somehow the notify in updatepr/cart crashes the app, firebase async error?
+      });
     });
   }
 
-  orderGotCancelled() async{
-   await Firestore.instance.collection('bokaalTables').document(this._tableNumber).collection('orders').document(this._currentOrderId).delete().then((_){
-     this._currentOrderId = "";
-   });
+  orderGotCancelled() async {
+    await Firestore.instance
+        .collection('bokaalTables')
+        .document(this._tableNumber)
+        .collection('orders')
+        .document(this._currentOrderId)
+        .delete()
+        .then((_) {
+      this._currentOrderId = "";
+    });
   }
 
-  Future<List<DocumentSnapshot>> getBeersId(String tableNumberResult) async{
-    var data = await Firestore.instance.collection('bokaalTables').document(tableNumberResult).collection('cart').getDocuments();
+  Future<List<DocumentSnapshot>> getBeersId(String tableNumberResult) async {
+    var data = await Firestore.instance
+        .collection('bokaalTables')
+        .document(tableNumberResult)
+        .collection('cart')
+        .getDocuments();
     var beerId = data.documents;
     return beerId;
   }
 
-  Future updatePrices() async{
-    num tempTotal =0;
+  Future updatePrices() async {
+    num tempTotal = 0;
     getBeersId(this._tableNumber).then((data) async {
-      for (int i=0; i < data.length; i++ ){
-        var beer = await Firestore.instance.collection('bokaalStock').document(data[i]['beerId']).get();
+      for (int i = 0; i < data.length; i++) {
+        var beer = await Firestore.instance
+            .collection('bokaalStock')
+            .document(data[i]['beerId'])
+            .get();
         tempTotal += beer.data['price'] * data[i]['qty'];
       }
     }).then((_) {
       this._totalAmount = tempTotal;
       notifyListeners();
-     // print(this._totalAmount.toString() + " is de total amount in cart");
+      // print(this._totalAmount.toString() + " is de total amount in cart");
     });
   }
-
-
 }
