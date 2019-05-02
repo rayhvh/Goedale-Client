@@ -17,10 +17,21 @@ class GlobalModel extends Model {
   void changeTableNumber(String tableNumber) {
     print(this._tableNumber + " was het oude nummer");
     this._tableNumber = tableNumber;
+    createIdTableFireStore();
     saveTableNumber(tableNumber);
     updatePrices();
+    updateCartItemAmount();
     print(this._tableNumber + " is het nieuwe nummer");
     notifyListeners();
+  }
+
+  createIdTableFireStore() async {
+    await Firestore.instance
+        .collection('bokaalTables')
+        .document(this._tableNumber)
+        .setData({
+      'id': this._tableNumber,
+    });
   }
 
   saveTableNumber(String number) async {
@@ -35,7 +46,12 @@ class GlobalModel extends Model {
   loadTableNumber() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String loadedNumber = prefs.getString('tableNumber');
-    this._tableNumber = loadedNumber;
+    if (loadedNumber == null) {
+      this._tableNumber = '0';
+    } else {
+      this._tableNumber = '0';
+      this._tableNumber = loadedNumber;
+    }
     notifyListeners();
     return loadedNumber;
   }
@@ -46,7 +62,11 @@ class GlobalModel extends Model {
         .document(this._tableNumber)
         .collection('cart')
         .getDocuments();
-    this._cartItemAmount = list.documents.length;
+    if (list.documents.length > 0) {
+      this._cartItemAmount = list.documents.length;
+    } else {
+      this._cartItemAmount = 0;
+    }
     print(_cartItemAmount);
     notifyListeners();
   }
@@ -87,7 +107,6 @@ class GlobalModel extends Model {
     }
     _currentOrderId = newDoc.documentID;
     notifyListeners();
- 
   }
 
   orderGotPaid() async {
@@ -103,7 +122,8 @@ class GlobalModel extends Model {
       this._currentOrderId = '';
       print('en nu notify');
     }).then((_) {
-      Future.delayed(Duration(milliseconds: 750), () => updatePrices()).then((_){
+      Future.delayed(Duration(milliseconds: 750), () => updatePrices())
+          .then((_) {
         updateCartItemAmount(); //todo fix the ugliesst ever dirty code.. somehow the notify in updatepr/cart crashes the app, firebase async error?
       });
     });

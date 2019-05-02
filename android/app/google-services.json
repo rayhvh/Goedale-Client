@@ -1,0 +1,119 @@
+{
+  "project_info": {
+    "project_number": "1085648930299",
+    "firebase_url": "https://goedale.firebaseio.com",
+    "project_id": "goedale",
+    "storage_bucket": "goedale.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085648930299:android:e7c3753a470a7e6b",
+        "android_client_info": {
+          "package_name": "com.example.goedale.backend"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085648930299-aq4p5c1p6l8eans5u6pdd17f5gi4fsno.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWb5yTSM-xIE5k17Y4QGxW8--atPnS3Qg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085648930299-aq4p5c1p6l8eans5u6pdd17f5gi4fsno.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1085648930299-r05731dhp1lljmbdod5ud6kreuakmkr6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.goedaleManagement"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085648930299:android:222b3a1e4cb17af8",
+        "android_client_info": {
+          "package_name": "com.example.goedale_client"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085648930299-aq4p5c1p6l8eans5u6pdd17f5gi4fsno.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWb5yTSM-xIE5k17Y4QGxW8--atPnS3Qg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085648930299-aq4p5c1p6l8eans5u6pdd17f5gi4fsno.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1085648930299-r05731dhp1lljmbdod5ud6kreuakmkr6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.goedaleManagement"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085648930299:android:fab5ffa9127cda73",
+        "android_client_info": {
+          "package_name": "com.example.goedale_management"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085648930299-aq4p5c1p6l8eans5u6pdd17f5gi4fsno.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWb5yTSM-xIE5k17Y4QGxW8--atPnS3Qg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085648930299-aq4p5c1p6l8eans5u6pdd17f5gi4fsno.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1085648930299-r05731dhp1lljmbdod5ud6kreuakmkr6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.goedaleManagement"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

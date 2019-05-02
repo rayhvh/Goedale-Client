@@ -1,9 +1,4 @@
-// This example shows a [Scaffold] with an [AppBar], a [BottomAppBar] and a
-// [FloatingActionButton]. The [body] is a [Text] placed in a [Center] in order
-// to center the text within the [Scaffold] and the [FloatingActionButton] is
-// centered and docked within the [BottomAppBar] using
-// [FloatingActionButtonLocation.centerDocked]. The [FloatingActionButton] is
-// connected to a callback that increments a counter.
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -22,13 +17,13 @@ void main() => runApp(MyApp(GlobalModel()));
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
-  final GlobalModel beerTable;
-  const MyApp(this.beerTable);
+  final GlobalModel globalModel;
+  const MyApp(this.globalModel);
 
   @override
   Widget build(BuildContext context) {
     return ScopedModel<GlobalModel>(
-      model: beerTable,
+      model: globalModel,
       child: MaterialApp(
         title: 'Goedale',
         theme: ThemeData.dark(),
