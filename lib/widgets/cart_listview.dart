@@ -43,7 +43,7 @@ class _CartListViewState extends State<CartListView> {
               child: ListView.builder(
                   itemCount: widget.cartItems.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return StreamBuilder(
+                    return StreamBuilder( //todo Stream builder for each cart item, vs entire stock + listview builder with check on matching ID from cart items.
                         stream: Firestore.instance
                             .collection('bokaalStock')
                             .document(widget.cartItems[index].data['beerId'])

@@ -77,15 +77,22 @@ class GlobalModel extends Model {
         .document(this._tableNumber)
         .collection('cart')
         .getDocuments();
+    var stats = await Firestore.instance
+        .collection('bokaalSettings')
+        .document('Stats').get();
     var date = new DateTime.now().millisecondsSinceEpoch;
     var newDoc = await Firestore.instance
         .collection('bokaalTables')
         .document(this._tableNumber)
         .collection('orders')
         .add({
+      "orderNr" : stats.data['totalOrders'] + 1,
       "isPaid": false,
       "madeAt": date,
       "totalAmount": this._totalAmount, // no reason re-calculate. staying var.
+    });
+    await Firestore.instance.collection('bokaalSettings').document('Stats').updateData({
+      'totalOrders' : stats.data['totalOrders'] + 1
     });
     for (int i = 0; i < list.documents.length; i++) {
       Firestore.instance.runTransaction((Transaction transaction) async {
@@ -96,12 +103,12 @@ class GlobalModel extends Model {
             .document(newDoc.documentID)
             .collection('items')
             .document(list.documents[i]['beerId']);
-
         await reference.setData(
           {
             "beerId": list.documents[i]['beerId'],
             "qty": list.documents[i]['qty'],
           },
+
         );
       });
     }
