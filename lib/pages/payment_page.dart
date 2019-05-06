@@ -3,6 +3,7 @@ import 'package:goedale_client/scoped_model/global_model.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class PaymentPage extends StatefulWidget {
   @override
@@ -28,8 +29,6 @@ class _PaymentPageState extends State<PaymentPage> {
           builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
           if (!snapshot.hasData)return CircularProgressIndicator();
             if(snapshot.data.data['isPaid'] == true){
-
-
               return Scaffold(
                 appBar: AppBar(
                   title: Text('Betaald'),
@@ -38,8 +37,12 @@ class _PaymentPageState extends State<PaymentPage> {
                 body: Container(
                   child: Center(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        Text('Yes! betaald!'),
+                        Text("Bedankt je betaling is gelukt en je bestelling komt eraan!", style: Theme.of(context).textTheme.title),
+                        CachedNetworkImage(
+                          imageUrl: "https://media.giphy.com/media/10avZ0rqdGFyfu/giphy.gif",
+                        ),
                         SizedBox(
                           width: 125,
                           child: RaisedButton(

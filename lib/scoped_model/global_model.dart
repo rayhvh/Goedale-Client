@@ -45,7 +45,7 @@ class GlobalModel extends Model {
 
   loadTableNumber() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String loadedNumber = prefs.getString('tableNumber');
+    String loadedNumber = prefs.getString('tableNumber').toString();
     if (loadedNumber == null) {
       this._tableNumber = '0';
     } else {
