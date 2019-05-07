@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'package:goedale_client/pages/image_preview_page.dart';
+
 import 'package:goedale_client/widgets/starrating_widget.dart';
 
 import 'package:scoped_model/scoped_model.dart';
@@ -266,8 +268,13 @@ class _FirestoreBeerdetailState extends State<FirestoreBeerdetail> {
                             itemBuilder: (BuildContext context, int index) {
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
-                              child: CachedNetworkImage( imageUrl:snapshot.data.documents[index].data['photo_md'] , placeholder: (context, url) => new CircularProgressIndicator(),
-                                errorWidget: (context, url, error) => new Icon(Icons.error),)
+                              child: GestureDetector(
+                                onTap: (){
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => ImagePreviewPage(snapshot.data.documents[index].data['photo_og'])));
+                                },
+                                child: CachedNetworkImage( imageUrl:snapshot.data.documents[index].data['photo_md'] , placeholder: (context, url) => new CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) => new Icon(Icons.error),),
+                              )
 //                                    Image.network(
 //                                      snapshot.data.documents[index].data['photo_md'],
 //                                      height: 200,
