@@ -8,7 +8,7 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
-
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
     super.initState();
@@ -18,29 +18,38 @@ class _AdminPageState extends State<AdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(),
       body: Container(
         child: ScopedModelDescendant<GlobalModel>(
           builder: (context,child,beerTableModel){
             TextEditingController _numberTextField = TextEditingController(text: beerTableModel.tableNumber);
-            return Row(
-              children: <Widget>[
-                Text("Tafel nummer: "),
-                Expanded(
-                  child: TextFormField(
-                    controller: _numberTextField,
-                    decoration: InputDecoration(hintText: "Nummer van de tafel"),
-                    keyboardType: TextInputType.number,
-                  ),
-                ),
-                RaisedButton(
-                  child: Icon(Icons.check),
-                  onPressed: (){
-                    beerTableModel.changeTableNumber(_numberTextField.text);
-                  },
-                ),
+            return Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(30,8,30,0),
+                child: Row(
+                  children: <Widget>[
 
-              ],
+                    Expanded(
+                      child: TextFormField(
+                        controller: _numberTextField,
+                        decoration: InputDecoration(hintText: "Het nummer van de tafel van deze tablet.", labelText: "Tafel nummer", icon:Icon(Icons.info_outline)),
+                        keyboardType: TextInputType.number,
+                      ),
+                    ),
+                    RaisedButton(
+                      child: Icon(Icons.check),
+                      onPressed: (){
+                        beerTableModel.changeTableNumber(_numberTextField.text);
+                        final snackBar = SnackBar(content: Text("Tafel nummer bijgewerkt naar " + _numberTextField.text),backgroundColor: Colors.red,);
+                        _scaffoldKey.currentState.showSnackBar(snackBar);
+                      },
+                    ),
+
+                  ],
+                ),
+              ),
             );
           },
         )

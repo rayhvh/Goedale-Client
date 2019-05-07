@@ -87,17 +87,12 @@ class _HomeWidgetState extends State<HomeWidget> {
                         ),
                       ),
                       ListTile(
-                        title: Text('Beheer'),
+                        title: Text('Beheer instellingen'),
                         onTap: () {
                           _displayDialog(context);
                         },
                       ),
-                      ListTile(
-                        title: Text('Instellingen'),
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                      ),
+
                     ],
                   ),
                 ),
