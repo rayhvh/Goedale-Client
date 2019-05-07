@@ -52,7 +52,7 @@ class _FirestoreStockListviewState extends State<FirestoreStockListview> {
             controller: searchController,
               decoration: const InputDecoration(
               icon: Icon(Icons.search),
-              hintText: 'Filter op naam of style of brouwerij of beschrijving: "Sweet" "Smoke" "Vanilla" ',
+              hintText: 'Filter op naam of style of brouwerij of beschrijving: "Sweet" "Coffee" ',
                 labelText: 'Zoeken',),
          /*   onFieldSubmitted: (String sString) {
                 this.setState((){
