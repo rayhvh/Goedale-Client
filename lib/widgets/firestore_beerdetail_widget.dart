@@ -40,248 +40,248 @@ class _FirestoreBeerdetailState extends State<FirestoreBeerdetail> {
       appBar: AppBar(
         title: Text(widget.beerdocument.data['name']),
       ),
-      body: Row(
-        children: <Widget>[
-          Expanded(
-            child: Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: <Widget>[
-                            CachedNetworkImage(
-                              imageUrl: widget.beerdocument.data["label"]["largeUrl"],
-                              height: 200,
-                            ),
-                            Text(widget.beerdocument.data['name'],
-                                style: Theme.of(context).textTheme.title),
-                            Text(widget.beerdocument.data['brewery']),
-                            Text(widget.beerdocument.data['style']),
-                            Text(widget.beerdocument.data['abv'].toString() + "%"),
-                            StarRating(rating: widget.beerdocument.data['rating'],
-                            color: Colors.white,
-                            borderColor: Colors.white,),
-                            Text(widget.beerdocument.data['rating'].toString()),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Expanded(
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0,5,0,0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Column(
                         children: <Widget>[
-                          ScopedModelDescendant<GlobalModel>(
-                            builder: (context, child, globalModel){
-                              return StreamBuilder(
-                                stream: Firestore.instance
-                                    .collection('bokaalTables').document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id'])
-                                    .snapshots(), // change to dynamic db?
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<DocumentSnapshot> snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return CircularProgressIndicator();
-                                  }
-                                  else{
-                                    if(snapshot.data.data == null){
-                                      print("nog geen data in cart");
-                                      return Column(
-                                        children: <Widget>[
-                                          Text("€" + widget.beerdocument.data['price'].toString(), style: Theme.of(context).textTheme.title),
-                                          Text("Nog " + widget.beerdocument.data['amount'].toString() + " in voorraad", style: Theme.of(context).textTheme.title),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              Padding(
-                                                padding: const EdgeInsets.all(8.0),
-                                                child: RaisedButton(
-                                                  color: Colors.white,
-                                                  child: Icon(Icons.remove, color:Colors.black,),
-                                                  onPressed: null,
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.all(8.0),
-                                                child: RaisedButton(
-                                                    color: Colors.white,
-                                                    onPressed: () {
-                                                      Firestore.instance.runTransaction(
-                                                              (Transaction transaction) async { // improve using batch,
-                                                            DocumentReference reference =
-                                                            Firestore.instance.collection("bokaalTables").document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
-                                                            await reference.setData({
-                                                              "beerId": widget.beerdocument.data['id'],
-                                                              "qty": 1,
-                                                            }, merge: true).then((_) {
-                                                              Firestore.instance.runTransaction(
-                                                                      (Transaction transaction) async {
-                                                                    DocumentReference reference =
-                                                                    Firestore.instance.collection("bokaalStock").document(widget.beerdocument.data['id']);
-                                                                    await reference.updateData({
-                                                                      "amount": widget.beerdocument.data['amount'] - 1,
-                                                                    }).then((_) {
-                                                                      globalModel.updateCartItemAmount();
-                                                                    });
-                                                                  }
-                                                              );
-                                                            });
-                                                          }
-                                                      );
-
-                                                    },
-                                                    child: const  Icon(Icons.add, color: Colors.black,)),
-                                              ),
-                                            ],
-                                          ),
-                                          Text("0 in winkelwagen", style: Theme.of(context).textTheme.title)
-                                        ],
-                                      );
-                                    }
-                                    else  if (snapshot.data.data['qty'] == 0){
-                                      Firestore.instance.runTransaction(
-                                              (Transaction transaction) async { // improve using batch,
-                                            DocumentReference reference =
-                                            Firestore.instance.collection("bokaalTables").document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
-                                            await reference.delete().then((_){
-                                              globalModel.updateCartItemAmount();
-                                            });
-                                          });
-                                      return Container();
-                                    }
-                                    else{
-                                      return Column(
-                                        children: <Widget>[
-                                          Text("€" + widget.beerdocument.data['price'].toString(), style: Theme.of(context).textTheme.title),
-                                          Text("Nog " + widget.beerdocument.data['amount'].toString() + " in voorraad", style: Theme.of(context).textTheme.title),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              Padding(
-                                                padding: const EdgeInsets.all(8.0),
-                                                child: RaisedButton(
-                                                    color: Colors.white,
-                                                    onPressed: () {
-                                                      Firestore.instance.runTransaction(
-                                                              (Transaction transaction) async { // improve using batch,
-                                                            DocumentReference reference =
-                                                            Firestore.instance.collection("bokaalTables").document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
-                                                            await reference.updateData({
-                                                              "qty": snapshot.data.data['qty'] - 1,
-                                                            }, ).then((_) {
-                                                              Firestore.instance.runTransaction(
-                                                                      (Transaction transaction) async {
-                                                                    DocumentReference reference =
-                                                                    Firestore.instance.collection("bokaalStock").document(widget.beerdocument.data['id']);
-                                                                    await reference.updateData({
-                                                                      "amount": widget.beerdocument.data['amount'] + 1,
-                                                                    }).then((_) {
-                                                                      globalModel.updateCartItemAmount();
-                                                                    });
-                                                                  }
-                                                              );
-                                                            });
-                                                          }
-                                                      );
-
-                                                    },
-                                                    child:  Icon(Icons.remove, color: Colors.black,)),
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.all(8.0),
-                                                child: RaisedButton(
-                                                    color: Colors.white,
-                                                    onPressed: (widget.beerdocument.data['amount'] == 0) ? null :() {
-                                                      Firestore.instance.runTransaction(
-                                                              (Transaction transaction) async { // improve using batch,
-                                                            DocumentReference reference =
-                                                            Firestore.instance.collection("bokaalTables").document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
-                                                            await reference.updateData({
-                                                              "qty": snapshot.data.data['qty'] + 1,
-                                                            }, ).then((_) {
-                                                              Firestore.instance.runTransaction(
-                                                                      (Transaction transaction) async {
-                                                                    DocumentReference reference =
-                                                                    Firestore.instance.collection("bokaalStock").document(widget.beerdocument.data['id']);
-                                                                    await reference.updateData({
-                                                                      "amount": widget.beerdocument.data['amount'] - 1,
-                                                                    }).then((_) {
-                                                                      globalModel.updateCartItemAmount();
-                                                                    });
-                                                                  }
-                                                              );
-                                                            });
-                                                          }
-                                                      );
-
-
-                                                    },
-                                                    child: const Icon(Icons.add, color: Colors.black,)),
-                                              ),
-                                            ],
-                                          ),
-                                          Text(snapshot.data.data['qty'].toString() + " in winkelwagen", style: Theme.of(context).textTheme.title)
-                                        ],
-                                      );
-                                    }
-                                  }
-                                },
-                              );
-                            },
-
-                          ), //
+                          CachedNetworkImage(
+                            imageUrl: widget.beerdocument.data["label"]["largeUrl"],
+                            height: 200,
+                          ),
+                          Text(widget.beerdocument.data['name'],
+                              style: Theme.of(context).textTheme.title),
+                          Text(widget.beerdocument.data['brewery']),
+                          Text(widget.beerdocument.data['style']),
+                          Text(widget.beerdocument.data['abv'].toString() + "%"),
+                          StarRating(rating: widget.beerdocument.data['rating'],
+                          color: Colors.white,
+                          borderColor: Colors.white,),
+                          Text(widget.beerdocument.data['rating'].toString()),
                         ],
                       ),
-                    )
-                  ],
-                ),
-                Expanded(
-                  child: Column(
-                    children: <Widget>[
-                      Text("Beschrijving",
-                          style: Theme.of(context).textTheme.title),
-                      Text(widget.beerdocument.data['desc']),
-                      Text("Smaak omschrijving",
-                          style: Theme.of(context).textTheme.title),
-                      Text(widget.beerdocument.data['tasteDesc']),
-                      Text("Foto's", style: Theme.of(context).textTheme.title),
-                      StreamBuilder(
-                        stream: Firestore.instance
-                            .collection('bokaalStock')
-                            .document(widget.beerdocument.data['id'])
-                            .collection('beerPhotos')
-                            .snapshots(), // change to dynamic db?
-                        builder: (BuildContext context,
-                            AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (!snapshot.hasData)
-                            return CircularProgressIndicator();
+                    ),
+                  ),
+                  Container(
+                    child: Column(
+                      children: <Widget>[
+                        ScopedModelDescendant<GlobalModel>(
+                          builder: (context, child, globalModel){
+                            return StreamBuilder(
+                              stream: Firestore.instance
+                                  .collection('bokaalTables').document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id'])
+                                  .snapshots(), // change to dynamic db?
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                if (!snapshot.hasData) {
+                                  return CircularProgressIndicator();
+                                }
+                                else{
+                                  if(snapshot.data.data == null){
+                                    print("nog geen data in cart");
+                                    return Column(
+                                      children: <Widget>[
+                                        Text("€" + widget.beerdocument.data['price'].toString(), style: Theme.of(context).textTheme.title),
+                                        Text("Nog " + widget.beerdocument.data['amount'].toString() + " in voorraad", style: Theme.of(context).textTheme.title),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: RaisedButton(
+                                                color: Colors.white,
+                                                child: Icon(Icons.remove, color:Colors.black,),
+                                                onPressed: null,
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: RaisedButton(
+                                                  color: Colors.white,
+                                                  onPressed: () {
+                                                    Firestore.instance.runTransaction(
+                                                            (Transaction transaction) async { // improve using batch,
+                                                          DocumentReference reference =
+                                                          Firestore.instance.collection("bokaalTables").document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
+                                                          await reference.setData({
+                                                            "beerId": widget.beerdocument.data['id'],
+                                                            "qty": 1,
+                                                          }, merge: true).then((_) {
+                                                            Firestore.instance.runTransaction(
+                                                                    (Transaction transaction) async {
+                                                                  DocumentReference reference =
+                                                                  Firestore.instance.collection("bokaalStock").document(widget.beerdocument.data['id']);
+                                                                  await reference.updateData({
+                                                                    "amount": widget.beerdocument.data['amount'] - 1,
+                                                                  }).then((_) {
+                                                                    globalModel.updateCartItemAmount();
+                                                                  });
+                                                                }
+                                                            );
+                                                          });
+                                                        }
+                                                    );
 
-                          return Container(
-                            height: 200,
-                            child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                 itemCount: snapshot.data.documents.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                  child: CachedNetworkImage( imageUrl:snapshot.data.documents[index].data['photo_md'] , placeholder: (context, url) => new CircularProgressIndicator(),
-                                    errorWidget: (context, url, error) => new Icon(Icons.error),)
+                                                  },
+                                                  child: const  Icon(Icons.add, color: Colors.black,)),
+                                            ),
+                                          ],
+                                        ),
+                                        Text("0 in winkelwagen", style: Theme.of(context).textTheme.title)
+                                      ],
+                                    );
+                                  }
+                                  else  if (snapshot.data.data['qty'] == 0){
+                                    Firestore.instance.runTransaction(
+                                            (Transaction transaction) async { // improve using batch,
+                                          DocumentReference reference =
+                                          Firestore.instance.collection("bokaalTables").document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
+                                          await reference.delete().then((_){
+                                            globalModel.updateCartItemAmount();
+                                          });
+                                        });
+                                    return Container();
+                                  }
+                                  else{
+                                    return Column(
+                                      children: <Widget>[
+                                        Text("€" + widget.beerdocument.data['price'].toString(), style: Theme.of(context).textTheme.title),
+                                        Text("Nog " + widget.beerdocument.data['amount'].toString() + " in voorraad", style: Theme.of(context).textTheme.title),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: RaisedButton(
+                                                  color: Colors.white,
+                                                  onPressed: () {
+                                                    Firestore.instance.runTransaction(
+                                                            (Transaction transaction) async { // improve using batch,
+                                                          DocumentReference reference =
+                                                          Firestore.instance.collection("bokaalTables").document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
+                                                          await reference.updateData({
+                                                            "qty": snapshot.data.data['qty'] - 1,
+                                                          }, ).then((_) {
+                                                            Firestore.instance.runTransaction(
+                                                                    (Transaction transaction) async {
+                                                                  DocumentReference reference =
+                                                                  Firestore.instance.collection("bokaalStock").document(widget.beerdocument.data['id']);
+                                                                  await reference.updateData({
+                                                                    "amount": widget.beerdocument.data['amount'] + 1,
+                                                                  }).then((_) {
+                                                                    globalModel.updateCartItemAmount();
+                                                                  });
+                                                                }
+                                                            );
+                                                          });
+                                                        }
+                                                    );
+
+                                                  },
+                                                  child:  Icon(Icons.remove, color: Colors.black,)),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: RaisedButton(
+                                                  color: Colors.white,
+                                                  onPressed: (widget.beerdocument.data['amount'] == 0) ? null :() {
+                                                    Firestore.instance.runTransaction(
+                                                            (Transaction transaction) async { // improve using batch,
+                                                          DocumentReference reference =
+                                                          Firestore.instance.collection("bokaalTables").document(globalModel.tableNumber).collection("cart").document(widget.beerdocument.data['id']);
+                                                          await reference.updateData({
+                                                            "qty": snapshot.data.data['qty'] + 1,
+                                                          }, ).then((_) {
+                                                            Firestore.instance.runTransaction(
+                                                                    (Transaction transaction) async {
+                                                                  DocumentReference reference =
+                                                                  Firestore.instance.collection("bokaalStock").document(widget.beerdocument.data['id']);
+                                                                  await reference.updateData({
+                                                                    "amount": widget.beerdocument.data['amount'] - 1,
+                                                                  }).then((_) {
+                                                                    globalModel.updateCartItemAmount();
+                                                                  });
+                                                                }
+                                                            );
+                                                          });
+                                                        }
+                                                    );
+
+
+                                                  },
+                                                  child: const Icon(Icons.add, color: Colors.black,)),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(snapshot.data.data['qty'].toString() + " in winkelwagen", style: Theme.of(context).textTheme.title)
+                                      ],
+                                    );
+                                  }
+                                }
+                              },
+                            );
+                          },
+
+                        ), //
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              child: Column(
+                children: <Widget>[
+                  Text("Beschrijving",
+                      style: Theme.of(context).textTheme.title),
+                  Text(widget.beerdocument.data['desc']),
+                  Text("Smaak omschrijving",
+                      style: Theme.of(context).textTheme.title),
+                  Text(widget.beerdocument.data['tasteDesc']),
+                  Text("Foto's", style: Theme.of(context).textTheme.title),
+                  StreamBuilder(
+                    stream: Firestore.instance
+                        .collection('bokaalStock')
+                        .document(widget.beerdocument.data['id'])
+                        .collection('beerPhotos')
+                        .snapshots(), // change to dynamic db?
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (!snapshot.hasData)
+                        return CircularProgressIndicator();
+
+                      return Container(
+                        height: 200,
+                        child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                             itemCount: snapshot.data.documents.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                              child: CachedNetworkImage( imageUrl:snapshot.data.documents[index].data['photo_md'] , placeholder: (context, url) => new CircularProgressIndicator(),
+                                errorWidget: (context, url, error) => new Icon(Icons.error),)
 //                                    Image.network(
 //                                      snapshot.data.documents[index].data['photo_md'],
 //                                      height: 200,
 //                                    ),
-                                  );
-                                }),
-                          );
-                        },
-                      ),
-                    ],
+                              );
+                            }),
+                      );
+                    },
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }
