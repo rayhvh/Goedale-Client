@@ -8,6 +8,7 @@ import 'package:goedale_client/widgets/starrating_widget.dart';
 
 import 'package:scoped_model/scoped_model.dart';
 import 'package:goedale_client/scoped_model/global_model.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class FirestoreBeerdetail extends StatefulWidget {
   final DocumentSnapshot beerdocument;
@@ -245,9 +246,33 @@ class _FirestoreBeerdetailState extends State<FirestoreBeerdetail> {
                   Text("Beschrijving",
                       style: Theme.of(context).textTheme.title),
                   Text(widget.beerdocument.data['desc']),
-                  Text("Smaak omschrijving",
-                      style: Theme.of(context).textTheme.title),
-                  Text(widget.beerdocument.data['tasteDesc']),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Text("Smaak omschrijving",
+                              style: Theme.of(context).textTheme.title),
+                          Text(widget.beerdocument.data['tasteDesc']),
+                        ],
+                      ),
+                      Column(
+                        children: <Widget>[
+                          Text("Untappd page",
+                              style: Theme.of(context).textTheme.title),
+                          Container(
+                            color: Colors.white,
+                            child: QrImage(
+                                data: "https://untappd.com/qr/beer/" +widget.beerdocument.data['id'],
+                                size: 200
+                            ),
+                          ),
+                        ],
+                      ),
+
+                    ],
+                  ),
+
                   Text("Foto's", style: Theme.of(context).textTheme.title),
                   StreamBuilder(
                     stream: Firestore.instance
