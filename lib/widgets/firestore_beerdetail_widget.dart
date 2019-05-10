@@ -246,6 +246,7 @@ class _FirestoreBeerdetailState extends State<FirestoreBeerdetail> {
                   Text("Beschrijving",
                       style: Theme.of(context).textTheme.title),
                   Text(widget.beerdocument.data['desc']),
+                  Divider(height: 10,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
@@ -272,7 +273,7 @@ class _FirestoreBeerdetailState extends State<FirestoreBeerdetail> {
 
                     ],
                   ),
-
+                  Divider(height: 10,),
                   Text("Foto's", style: Theme.of(context).textTheme.title),
                   StreamBuilder(
                     stream: Firestore.instance
